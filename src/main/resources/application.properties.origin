@@ -1,0 +1,29 @@
+# HTTP ????????????
+quarkus.http.port=8080
+
+# Reactive datasource
+quarkus.datasource.reactive.url=postgresql://localhost:5434/user-service-db
+quarkus.datasource.username=
+quarkus.datasource.password=
+
+# Hibernate ORM
+quarkus.hibernate-orm.database.generation=none
+quarkus.hibernate-orm.log.sql=true
+
+# Liquibase
+quarkus.liquibase.migrate-at-start=true
+quarkus.liquibase.change-log=classpath:db/changelog/db.changelog-master.yaml
+
+# OIDC ????????????
+quarkus.oidc.auth-server-url=http://localhost:8079/realms/IncidentManagement
+quarkus.oidc.client-id=user-service
+quarkus.oidc.credentials.secret=
+quarkus.oidc.token.audience=user-service
+quarkus.oidc.roles.source=accesstoken
+
+# ??????????????
+quarkus.http.auth.permission.authenticated.paths=/*
+quarkus.http.auth.permission.authenticated.policy=authenticated
+
+# ?????? ??????????
+org.eclipse.microprofile.rest.client.propagateHeaders=Authorization

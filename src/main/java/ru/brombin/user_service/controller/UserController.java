@@ -1,5 +1,6 @@
 package ru.brombin.user_service.controller;
 
+import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Uni;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -22,7 +23,7 @@ import java.util.List;
 
 @Slf4j
 @Path("/api/users")
-@RolesAllowed("admin")
+@RolesAllowed("ROLE_ADMIN")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
@@ -43,15 +44,13 @@ public class UserController {
     }
 
     @POST
-    @Transactional
     public Uni<Response> createUser(@Valid UserDto userDto) {
         return userService.createUser(userDto)
-                .map(createdUser -> Response.created(URI.create("/users/" + createdUser.id)).entity(createdUser).build());
+                .map(createdUser -> Response.created(URI.create("/users/" + createdUser.getId())).entity(createdUser).build());
     }
 
     @PUT
     @Path("/{id}")
-    @Transactional
     public Uni<Response> updateUser(@PathParam("id") Long id, @Valid UserDto userDto) {
         return userService.updateUser(id, userDto)
                 .map(updatedUser -> Response.ok(updatedUser).build());
@@ -59,7 +58,6 @@ public class UserController {
 
     @DELETE
     @Path("/{id}")
-    @Transactional
     public Uni<Response> deleteUser(@PathParam("id") Long id) {
         return userService.deleteUser(id)
                 .onItem().ifNull().failWith(() -> new NotFoundException(String.format("User with ID '%d' not found", id)))

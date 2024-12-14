@@ -36,29 +36,26 @@ public class UserService {
                 .onItem().invoke(() -> log.info("Successfully fetched user with ID: {}", id));
     }
 
-    @Transactional
     public Uni<User> createUser(UserDto userDto) {
         User user = userMapper.toEntity(userDto);
 
         return userRepository.persistAndFlush(user)
-                .onItem().invoke(createdUser -> log.info("User with ID: {} created successfully", createdUser.id));
+                .onItem().invoke(createdUser -> log.info("User with ID: {} created successfully", createdUser.getId()));
     }
 
-    @Transactional
     public Uni<User> updateUser(Long id, UserDto userDto) {
 
         return userRepository.findById(id)
                 .onItem().ifNull().failWith(() -> new NotFoundException(String.format("User with ID '%d' not found", id)))
                 .flatMap(existingUser -> {
                     User updatedUser = userMapper.toEntity(userDto);
-                    updatedUser.id = existingUser.id;
+                    updatedUser.setId(existingUser.getId());
 
                     return userRepository.persistAndFlush(updatedUser);
                 })
-                .onItem().invoke(updatedUser -> log.info("User with ID: {} updated successfully", updatedUser.id));
+                .onItem().invoke(updatedUser -> log.info("User with ID: {} updated successfully", updatedUser.getId()));
     }
 
-    @Transactional
     public Uni<Void> deleteUser(Long id) {
 
         return userRepository.findById(id)

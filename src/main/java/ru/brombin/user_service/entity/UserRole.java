@@ -1,5 +1,5 @@
 package ru.brombin.user_service.entity;
 
 public enum UserRole {
-    USER, MANAGER, ADMIN
+    ROLE_USER, ROLE_MANAGER, ROLE_ADMIN
 }

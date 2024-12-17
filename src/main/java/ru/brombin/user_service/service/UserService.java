@@ -3,7 +3,6 @@ package ru.brombin.user_service.service;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -12,6 +11,7 @@ import ru.brombin.user_service.dto.UserDto;
 import ru.brombin.user_service.entity.User;
 import ru.brombin.user_service.mapper.UserMapper;
 import ru.brombin.user_service.repository.UserRepository;
+import ru.brombin.user_service.util.LogMessages;
 import ru.brombin.user_service.util.exception.NotFoundException;
 
 import java.util.List;
@@ -25,43 +25,49 @@ public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
 
-    public Uni<List<User>> getAllUsers() {
+    public Uni<List<UserDto>> getAllUsers() {
         return userRepository.listAll()
-                .invoke(users -> log.info("Successfully fetched {} users", users.size()));
+                .map(users -> users.stream()
+                        .map(userMapper::toDto)
+                        .toList()
+                )
+                .invoke(users -> logInfo(LogMessages.USERS_FETCHED, users.size()));
     }
 
-    public Uni<User> getUserById(Long id) {
+    public Uni<UserDto> getUserById(Long id) {
         return userRepository.findById(id)
-                .onItem().ifNull().failWith(() -> new NotFoundException(String.format("User with ID '%d' not found", id)))
-                .onItem().invoke(() -> log.info("Successfully fetched user with ID: {}", id));
+                .map(userMapper::toDto)
+                .onItem().ifNull().failWith(() -> new NotFoundException(LogMessages.USER_NOT_FOUND.getFormatted(id)))
+                .invoke(() -> logInfo(LogMessages.USER_FETCHED, id));
     }
 
-    public Uni<User> createUser(UserDto userDto) {
+    public Uni<UserDto> createUser(UserDto userDto) {
         User user = userMapper.toEntity(userDto);
-
         return userRepository.persistAndFlush(user)
-                .onItem().invoke(createdUser -> log.info("User with ID: {} created successfully", createdUser.getId()));
+                .invoke(created -> logInfo(LogMessages.USER_CREATED, created.getId()))
+                .map(userMapper::toDto);
     }
 
-    public Uni<User> updateUser(Long id, UserDto userDto) {
-
+    public Uni<UserDto> updateUser(Long id, UserDto userDto) {
         return userRepository.findById(id)
-                .onItem().ifNull().failWith(() -> new NotFoundException(String.format("User with ID '%d' not found", id)))
-                .flatMap(existingUser -> {
-                    User updatedUser = userMapper.toEntity(userDto);
-                    updatedUser.setId(existingUser.getId());
-
-                    return userRepository.persistAndFlush(updatedUser);
+                .onItem().ifNull().failWith(() -> new NotFoundException(LogMessages.USER_NOT_FOUND.getFormatted(id)))
+                .flatMap(existing -> {
+                    User updated = userMapper.toEntity(userDto);
+                    updated.setId(existing.getId());
+                    return userRepository.persistAndFlush(updated);
                 })
-                .onItem().invoke(updatedUser -> log.info("User with ID: {} updated successfully", updatedUser.getId()));
+                .invoke(updated -> logInfo(LogMessages.USER_UPDATED, updated.getId()))
+                .map(userMapper::toDto);
     }
 
     public Uni<Void> deleteUser(Long id) {
-
         return userRepository.findById(id)
-                .onItem().ifNull().failWith(() -> new NotFoundException(String.format("User with ID '%d' not found", id)))
-                .flatMap(user -> userRepository.delete(user)
-                        .onItem().invoke(() -> log.info("User with ID: {} deleted successfully", id)));
+                .onItem().ifNull().failWith(() -> new NotFoundException(LogMessages.USER_NOT_FOUND.getFormatted(id)))
+                .flatMap(userRepository::delete)
+                .invoke(() -> logInfo(LogMessages.USER_DELETED, id));
+    }
+
+    private void logInfo(LogMessages message, Object... args) {
+        log.info(message.getFormatted(args));
     }
 }
-

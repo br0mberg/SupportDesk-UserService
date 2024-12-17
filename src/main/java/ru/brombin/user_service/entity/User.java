@@ -1,6 +1,5 @@
 package ru.brombin.user_service.entity;
 
-import io.quarkus.hibernate.reactive.panache.PanacheEntity;
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

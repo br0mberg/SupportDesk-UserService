@@ -1,5 +1,6 @@
 package ru.brombin.user_service.service;
 
+import io.quarkus.panache.common.Page;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -14,6 +15,7 @@ import ru.brombin.user_service.repository.UserRepository;
 import ru.brombin.user_service.util.LogMessages;
 import ru.brombin.user_service.util.exception.NotFoundException;
 
+import java.awt.print.Pageable;
 import java.util.List;
 
 @Slf4j
@@ -25,8 +27,8 @@ public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
 
-    public Uni<List<UserDto>> getAllUsers() {
-        return userRepository.listAll()
+    public Uni<List<UserDto>> getAllUsers(int page, int size) {
+        return userRepository.listAllPaged(page, size)
                 .map(users -> users.stream()
                         .map(userMapper::toDto)
                         .toList()

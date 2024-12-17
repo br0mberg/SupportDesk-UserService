@@ -26,8 +26,9 @@ public class UserController {
     UserService userService;
 
     @GET
-    public Uni<Response> getAllUsers() {
-        return userService.getAllUsers()
+    public Uni<Response> getAllUsers(@QueryParam("page") @DefaultValue("0") int page,
+                                     @QueryParam("size") @DefaultValue("10") int size) {
+        return userService.getAllUsers(page, size)
                 .map(users -> Response.ok(users).build());
     }
 

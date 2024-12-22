@@ -1,4 +1,4 @@
-package ru.brombin.user_service.util.exception;
+package ru.brombin.user_service.util.exceptions;
 
 public class NotFoundException extends RuntimeException {
     public NotFoundException(String message) {

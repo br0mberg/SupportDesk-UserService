@@ -1,6 +1,5 @@
 package ru.brombin.user_service.service;
 
-import io.quarkus.panache.common.Page;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -13,9 +12,8 @@ import ru.brombin.user_service.entity.User;
 import ru.brombin.user_service.mapper.UserMapper;
 import ru.brombin.user_service.repository.UserRepository;
 import ru.brombin.user_service.util.LogMessages;
-import ru.brombin.user_service.util.exception.NotFoundException;
+import ru.brombin.user_service.util.exceptions.NotFoundException;
 
-import java.awt.print.Pageable;
 import java.util.List;
 
 @Slf4j

@@ -8,8 +8,8 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 import jakarta.ws.rs.WebApplicationException;
-import ru.brombin.user_service.util.exception.NotFoundException;
-import ru.brombin.user_service.util.exception.ValidationException;
+import ru.brombin.user_service.util.exceptions.NotFoundException;
+import ru.brombin.user_service.util.exceptions.ValidationException;
 
 @Slf4j
 @Provider

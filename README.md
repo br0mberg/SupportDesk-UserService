@@ -1,4 +1,4 @@
-# user-service
+# User-service (ещё не реализовано)
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
